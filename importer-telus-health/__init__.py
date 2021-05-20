@@ -42,7 +42,7 @@ def create_location(uuid, name, address, postal_code, province):
         'external_key': uuid,
         'line1': address,
         'active': 1,
-        'url': f'https://pharmaconnect.ca/Appointment/{uuid}/book/serviceType=ImmunizationCovid',
+        'url': f'https://pharmaconnect.ca/Appointment/{uuid}/Book/ImmunizationCovid',
         'organization': VHC_ORG,
         'province': province
     }
