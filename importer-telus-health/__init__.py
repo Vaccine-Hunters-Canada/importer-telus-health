@@ -39,7 +39,7 @@ def create_location(uuid, name, address, postal_code, province):
     data = {
         'name': name,
         'postcode': postal_code,
-        'externalKey': uuid,
+        'external_key': uuid,
         'line1': address,
         'active': 1,
         'url': f'https://pharmaconnect.ca/Appointment/{uuid}/book/serviceType=ImmunizationCovid',
