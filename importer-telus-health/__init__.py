@@ -35,7 +35,7 @@ def get_location(uuid):
         return None
     return response.json()['id']
 
-def create_location(uuid, name, address, postal_code):
+def create_location(uuid, name, address, postal_code, province):
     data = {
         'name': name,
         'postcode': postal_code,
@@ -43,7 +43,8 @@ def create_location(uuid, name, address, postal_code):
         'line1': address,
         'active': 1,
         'url': f'https://pharmaconnect.ca/Appointment/{uuid}/book/serviceType=ImmunizationCovid',
-        'organization': VHC_ORG
+        'organization': VHC_ORG,
+        'province': province
     }
 
     headers = {'Authorization': API_KEY, 'accept': 'application/json', 'Content-Type': 'application/json'}
@@ -103,11 +104,11 @@ def update_availability(id, location, available):
     return response.json()['id']
 
 
-def get_or_create_location(uuid, name, address, postal_code):
+def get_or_create_location(uuid, name, address, postal_code, province):
     location = get_location(uuid)
     if location is None:
         logging.info('Creating Location')
-        location = create_location(uuid, name, address, postal_code)
+        location = create_location(uuid, name, address, postal_code, province)
     return location
 
 def create_or_update_availability(location, available):
@@ -126,13 +127,14 @@ def main(mytimer: func.TimerRequest) -> None:
         store_name = i[0]
         address = i[1]
         postal_code = i[2]
+        province = i[4]
         uuid = i[5]
 
         if not postal_code:
             continue
 
         logging.info(f'Location: {uuid} {postal_code}')
-        location_id = get_or_create_location(uuid, store_name, address, postal_code)
+        location_id = get_or_create_location(uuid, store_name, address, postal_code, province)
         available = get_telus_pharm_avail(uuid)
         logging.info(f'Availability: {available}')
         create_or_update_availability(location_id, available)
