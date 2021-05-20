@@ -57,16 +57,19 @@ def get_availability(location):
         'min_date': str(datetime.now().date())
     }
     logging.info(params)
-    url = request_path(f'vaccine-availability/location')
+    url = request_path(f'vaccine-availability/location/')
     response = requests.get(url, params=params)
     if response.status_code != 200:
         logging.info(response.json())
         return None
     logging.info(response.json())
-    return response.json()['id']
+    availabilities = response.json()
+    if len(availabilities) > 0:
+        return availabilities[0]['id']
+    return None
 
 def create_availability(location, available):
-    date = str(datetime.now().date())+'T00:00:00+04:00'
+    date = str(datetime.now().date())+'T00:00:00Z'
     vacc_avail_body = {
         "numberAvailable": available,
         "numberTotal": available,
@@ -83,7 +86,7 @@ def create_availability(location, available):
     return response.json()['id']
 
 def update_availability(id, location, available):
-    date = str(datetime.now().date())+'T00:00:00+04:00'
+    date = str(datetime.now().date())+'T00:00:00Z'
     vacc_avail_body = {
         "numberAvailable": available,
         "numberTotal": available,
@@ -113,7 +116,7 @@ def create_or_update_availability(location, available):
         logging.info('Creating Availability')
         availability = create_availability(location, available)
     else:
-        logging.ingo(f'Updating Availability: {availability}')
+        logging.info(f'Updating Availability: {availability}')
         availability = update_availability(availability, location, available)
     return availability
 
