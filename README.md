@@ -6,4 +6,4 @@ Python script to periodically fetch vaccine availability from pharmacies linked 
 
 Original scraping function developed by [@juberr](https://github.com/juberr)
 
-Function made Azure compatable  by [@plecky](https://github.com/pleckey)
+Function made Azure compatible  by [@plecky](https://github.com/pleckey)
