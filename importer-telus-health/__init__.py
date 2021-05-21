@@ -37,11 +37,13 @@ async def get_telus_pharm_avail(session, uuid):
 async def get_location(session, uuid):
     url = request_path(f'locations/external/{uuid}')
     response = await session.get(url, headers={'accept': 'application/json'})
-    data = await response.json()
-    status_code = response.status
-    if status_code != 200:
-        return None
-    return data['id']
+    data = None
+    try:
+        data = await response.json()
+    except aiohttp.client_exceptions.ContentTypeError:
+        if not data:
+            return None
+    return str(data['id'])
 
 async def create_location(session, uuid, name, address, postal_code, province):
     data = {
@@ -98,7 +100,8 @@ async def create_availability(session, location, available):
     vacc_avail_headers = {'accept': 'application/json', 'Authorization': API_KEY, 'Content-Type':'application/json'}
     response = await session.post(request_path('vaccine-availability'), headers=vacc_avail_headers, json=vacc_avail_body)
     logging.info(f'create_availability: {response.status}')
-    return  await response.json()['id']
+    data = await response.json()
+    return  data['id']
 
 async def update_availability(session, id, location, available):
     date = str(datetime.now().date())+'T00:00:00Z'
@@ -115,7 +118,8 @@ async def update_availability(session, id, location, available):
     vacc_avail_headers = {'accept': 'application/json', 'Authorization': API_KEY, 'Content-Type':'application/json'}
     response = await session.put(request_path(f'vaccine-availability/{id}'), headers=vacc_avail_headers, json=vacc_avail_body)
     logging.info(f'update_availability: {response.status}')
-    return await response.json()['id']
+    data = await response.json()
+    return data['id']
 
 
 async def get_or_create_location(session, uuid, name, address, postal_code, province):
@@ -129,10 +133,10 @@ async def create_or_update_availability(session, location, available):
     availability = await get_availability(session, location)
     if availability is None:
         logging.info('Creating Availability')
-        availability = create_availability(location, available)
+        availability = await create_availability(session, location, available)
     else:
         logging.info(f'Updating Availability: {availability}')
-        availability = update_availability(availability, location, available)
+        availability = await update_availability(session, availability, location, available)
     return availability
 
 
