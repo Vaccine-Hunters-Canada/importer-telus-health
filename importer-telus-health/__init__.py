@@ -48,13 +48,8 @@ def create_location(uuid, name, address, postal_code, province):
     }
 
     headers = {'Authorization': API_KEY, 'Content-Type': 'application/json'}
-    location_post = requests.post(request_path('locations/expanded/'), headers=headers, json=data)
-    #logging.info(location_post.status_code)
-    #logging.info(location_post.request.url)
-    #logging.info(location_post.request.headers)
-    #logging.info(location_post.request.body)
+    location_post = requests.post(request_path('locations/expanded'), headers=headers, json=data)
     logging.info(location_post.text)
-    #logging.info(location_post.content)
     location_id = location_post.text
     return location_id
 
