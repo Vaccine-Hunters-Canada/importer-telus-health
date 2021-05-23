@@ -3,16 +3,14 @@ import os
 import csv
 from bs4 import BeautifulSoup as soup
 from datetime import datetime
-from dotenv import load_dotenv
 import asyncio
 import aiohttp
 
 import azure.functions as func
 
-load_dotenv()
-API_KEY = f'Bearer {os.getenv("API_KEY")}'
-BASE_URL = os.getenv('BASE_URL')
-VHC_ORG = os.getenv('ORG')
+API_KEY = f'Bearer {os.environ.get("API_KEY")}'
+BASE_URL = os.environ.get('BASE_URL')
+VHC_ORG = os.environ.get('ORG')
 
 with open('list.csv', newline='') as pharma:
     pharma_reader = csv.reader(pharma)
