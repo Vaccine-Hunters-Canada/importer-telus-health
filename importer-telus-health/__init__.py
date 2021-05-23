@@ -1,5 +1,4 @@
 import logging
-import requests
 import os
 import csv
 from bs4 import BeautifulSoup as soup
@@ -8,15 +7,14 @@ from dotenv import load_dotenv
 import asyncio
 import aiohttp
 
-# import azure.functions as func
+import azure.functions as func
 
 load_dotenv()
 API_KEY = f'Bearer {os.getenv("API_KEY")}'
 BASE_URL = os.getenv('BASE_URL')
 VHC_ORG = os.getenv('ORG')
 
-
-with open('../list.csv', newline='') as pharma:
+with open('list.csv', newline='') as pharma:
     pharma_reader = csv.reader(pharma)
     next(pharma_reader)
     pharmacies = [i for i in pharma_reader]
@@ -40,10 +38,10 @@ async def get_location(session, uuid):
     data = None
     try:
         data = await response.json()
-    except aiohttp.client_exceptions.ContentTypeError:
+    except aiohttp.client_exceptions.ContentTypeError: # if location does not exist
         if not data:
             return None
-    return str(data['id'])
+    return data['id']
 
 async def create_location(session, uuid, name, address, postal_code, province):
     data = {
@@ -58,14 +56,9 @@ async def create_location(session, uuid, name, address, postal_code, province):
     }
 
     headers = {'Authorization': API_KEY, 'Content-Type': 'application/json'}
-    location_post = await session.post(request_path('locations/expanded/'), headers=headers, json=data)
+    location_post = await session.post(request_path('locations/expanded'), headers=headers, json=data)
     location_id = await location_post.text()
-    #logging.info(location_post.status_code)
-    #logging.info(location_post.request.url)
-    #logging.info(location_post.request.headers)
-    #logging.info(location_post.request.body)
     logging.info(location_id)
-    #logging.info(location_post.content)
     return location_id
 
 async def get_availability(session, location):
@@ -76,6 +69,7 @@ async def get_availability(session, location):
     logging.info(params)
     url = request_path(f'vaccine-availability/location/')
     response = await session.get(url, params=params)
+    
     if response.status != 200:
         logging.info(await response.json())
         return None
@@ -140,8 +134,7 @@ async def create_or_update_availability(session, location, available):
     return availability
 
 
-#def main(mytimer: func.TimerRequest) -> None:
-async def main():
+async def main(mytimer: func.TimerRequest) -> None:
     async with aiohttp.ClientSession() as session:
         for i in pharmacies:
 
@@ -160,6 +153,4 @@ async def main():
             logging.info(f'Availability: {available}')
             await create_or_update_availability(session, location_id, available)
 
-if __name__ == "__main__":
-    asyncio.run(main())
         
