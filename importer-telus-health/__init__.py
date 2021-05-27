@@ -3,7 +3,6 @@ import os
 import csv
 from bs4 import BeautifulSoup as soup
 from datetime import datetime
-import asyncio
 import aiohttp
 
 import azure.functions as func
@@ -152,3 +151,4 @@ async def main(mytimer: func.TimerRequest) -> None:
             await create_or_update_availability(session, location_id, available)
 
         
+
