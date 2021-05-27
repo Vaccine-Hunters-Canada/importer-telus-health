@@ -3,7 +3,6 @@ import os
 import csv
 from bs4 import BeautifulSoup as soup
 from datetime import datetime
-import asyncio
 import aiohttp
 
 import azure.functions as func
