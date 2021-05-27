@@ -151,3 +151,4 @@ async def main(mytimer: func.TimerRequest) -> None:
             await create_or_update_availability(session, location_id, available)
 
         
+
