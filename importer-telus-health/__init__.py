@@ -14,7 +14,7 @@ VHC_ORG = os.environ.get('ORG')
 
 with open('list.csv', newline='') as pharma:
     pharma_reader = csv.reader(pharma)
-    next(pharma_reader)
+    # next(pharma_reader) don't think we need this as there is no header row
     pharmacies = [i for i in pharma_reader]
 
 def request_path(path):
