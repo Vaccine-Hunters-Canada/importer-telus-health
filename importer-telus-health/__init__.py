@@ -3,7 +3,6 @@ import os
 import csv
 from bs4 import BeautifulSoup as soup
 from datetime import datetime
-import asyncio
 import aiohttp
 
 import azure.functions as func
@@ -14,7 +13,6 @@ VHC_ORG = os.environ.get('ORG')
 
 with open('list.csv', newline='') as pharma:
     pharma_reader = csv.reader(pharma)
-    # next(pharma_reader) don't think we need this as there is no header row
     pharmacies = [i for i in pharma_reader]
 
 def request_path(path):
@@ -148,6 +146,13 @@ async def main(mytimer: func.TimerRequest) -> None:
             logging.info(f'Location: {uuid} {postal_code}')
             location_id = await get_or_create_location(session, uuid, store_name, address, postal_code, province)
             available = await get_telus_pharm_avail(session, uuid)
+            logging.info(f'Availability: {available}')
+            await create_or_update_availability(session, location_id, available)
+
+        
+
+>>>>>>> da0a17863fa496927e78bc664e646c519dcd6509
+d)
             logging.info(f'Availability: {available}')
             await create_or_update_availability(session, location_id, available)
 
